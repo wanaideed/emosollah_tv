@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>{{ musollah_name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/base.css?v=8">
+    <link rel="stylesheet" href="/static/css/templates/{{ template }}.css?v=8">
+</head>
+<body>
+    <!-- Background -->
+    {% if background_url %}
+    <div class="bg-image" style="background-image: url('{{ background_url }}');"></div>
+    {% else %}
+    <div class="bg-overlay"></div>
+    {% endif %}
+
+    <!-- Alert Pages (3-stage prayer alert flow) -->
+    {% include 'partials/alert_masuk.html' %}
+    {% include 'partials/alert_countdown.html' %}
+    {% include 'partials/alert_jemaah.html' %}
+
+    <!-- Page: Prayer Times -->
+    <div id="page-prayer" class="page active">
+        <!-- Top Navbar -->
+        <div class="header">
+            <div class="header-glow"></div>
+            <div class="header-inner">
+                <div class="header-left">
+                    <h1 class="musollah-name">{{ musollah_name }}</h1>
+                </div>
+                <div class="header-right">
+                    <div class="date-section">
+                        <div class="date-gregorian" id="date-gregorian"></div>
+                        <div class="date-separator">|</div>
+                        <div class="date-hijri" id="date-hijri"></div>
+                    </div>
+                    <div class="clock" id="clock"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content: Events -->
+        <div class="main-content">
+            <img id="event-image" class="main-event-image" src="" alt="Event">
+        </div>
+
+        <!-- Bottom Navbar: Prayer Times -->
+        <div class="bottom-navbar"{% if enable_ticker %} style="margin-bottom: 50px;"{% endif %}>
+            <div class="bottom-prayer-col" id="card-subuh">
+                <div class="prayer-label">Subuh</div>
+                <div class="prayer-time" id="time-subuh">--:--</div>
+            </div>
+            <div class="bottom-prayer-col" id="card-syuruk">
+                <div class="prayer-label">Syuruk</div>
+                <div class="prayer-time" id="time-syuruk">--:--</div>
+            </div>
+            <div class="bottom-prayer-col" id="card-zohor">
+                <div class="prayer-label">Zohor</div>
+                <div class="prayer-time" id="time-zohor">--:--</div>
+            </div>
+            <div class="bottom-prayer-col" id="card-asar">
+                <div class="prayer-label">Asar</div>
+                <div class="prayer-time" id="time-asar">--:--</div>
+            </div>
+            <div class="bottom-prayer-col" id="card-maghrib">
+                <div class="prayer-label">Maghrib</div>
+                <div class="prayer-time" id="time-maghrib">--:--</div>
+            </div>
+            <div class="bottom-prayer-col" id="card-isyak">
+                <div class="prayer-label">Isyak</div>
+                <div class="prayer-time" id="time-isyak">--:--</div>
+            </div>
+        </div>
+
+        {% if enable_ticker %}
+        <!-- Bottom Ticker -->
+        <div class="ticker-bar">
+            <div class="ticker-content">
+                <span class="ticker-text">Dibangunkan oleh emusollah.com &nbsp;&bull;&nbsp; Untuk maklumat lanjut boleh melayari emusollah.com &nbsp;&bull;&nbsp; No Tel: 019 233 4556 &nbsp;&bull;&nbsp; Dibangunkan oleh emusollah.com &nbsp;&bull;&nbsp; Untuk maklumat lanjut boleh melayari emusollah.com &nbsp;&bull;&nbsp; No Tel: 019 233 4556 &nbsp;&bull;&nbsp;</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <script src="/static/js/prayer.js"></script>
+    <script src="/static/js/events.js"></script>
+    <script src="/static/js/alert.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

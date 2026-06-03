@@ -1,0 +1,21 @@
+{
+    "e_musollah_url": "http://localhost:5000",
+    "zone": "SGR01",
+    "musollah_name": "MASJID ABDUL SOMAD",
+    "template": "dark",
+    "enable_event_rotation": true,
+    "enable_aktiviti_calendar": true,
+    "enable_ticker": false,
+    "enable_background_image": true,
+    "page_rotation_seconds": 10,
+    "masuk_duration_seconds": 30,
+    "countdown_duration_seconds": 600,
+    "jemaah_duration_seconds": 600,
+    "masuk_duration_minutes": 1,
+    "iqomah_duration_minutes": 2,
+    "solat_duration_minutes": 2,
+    "screen_width": 1920,
+    "screen_height": 1080,
+    "host": "0.0.0.0",
+    "port": 5001
+}

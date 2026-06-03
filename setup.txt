@@ -1,0 +1,260 @@
+================================================================================
+  MUSOLLAH CONTENT TV — SETUP GUIDE (FROM SCRATCH)
+  Raspberry Pi 4/5 + Raspberry Pi OS (64-bit)
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+HARDWARE REQUIRED
+────────────────────────────────────────────────────────────────────────────────
+- Raspberry Pi 4 (4GB RAM minimum) or Pi 5
+- MicroSD card (16GB+, Class 10)
+- HDMI display / TV
+- Power supply (Pi 4: USB-C 5V 3A)
+- Internet connection (Ethernet recommended for first setup)
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 1 — FLASH THE OS
+────────────────────────────────────────────────────────────────────────────────
+1. Download Raspberry Pi Imager: https://www.raspberrypi.com/software/
+2. Insert SD card → Open Imager
+3. Choose OS: Raspberry Pi OS (64-bit) — Desktop version
+4. Click the gear icon (⚙) before flashing:
+   - Set hostname:  musollah-tv
+   - Enable SSH
+   - Set username/password  (e.g. pi / yourpassword)
+   - Set your WiFi credentials
+5. Flash → insert card → boot Pi
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 2 — FIRST BOOT & UPDATE
+────────────────────────────────────────────────────────────────────────────────
+SSH in or use keyboard/monitor:
+
+    sudo apt update && sudo apt upgrade -y
+    sudo reboot
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 3 — INSTALL SYSTEM DEPENDENCIES
+────────────────────────────────────────────────────────────────────────────────
+    sudo apt install -y \
+        python3-pip \
+        python3-venv \
+        chromium-browser \
+        unclutter \
+        git \
+        xdotool
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 4 — COPY PROJECT FILES
+────────────────────────────────────────────────────────────────────────────────
+Option A — from USB drive:
+    cp -r /media/pi/USBDRIVE/MusollahContentTV ~/MusollahContentTV
+
+Option B — from Git (if you have a repo):
+    git clone https://your-repo-url ~/MusollahContentTV
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 5 — INSTALL PYTHON DEPENDENCIES
+────────────────────────────────────────────────────────────────────────────────
+    cd ~/MusollahContentTV
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install flask flask-cors requests
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 6 — CONFIGURE settings.json
+────────────────────────────────────────────────────────────────────────────────
+    nano ~/MusollahContentTV/settings.json
+
+Edit the key values:
+
+    {
+        "e_musollah_url": "http://your-emusollah-server",
+        "zone": "SGR01",
+        "musollah_name": "NAMA MUSOLLAH ANDA",
+        "template": "dark",
+        "enable_event_rotation": true,
+        "enable_aktiviti_calendar": true,
+        "enable_ticker": false,
+        "enable_background_image": true,
+        "page_rotation_seconds": 10,
+        "masuk_duration_minutes": 1,
+        "iqomah_duration_minutes": 10,
+        "solat_duration_minutes": 20,
+        "host": "0.0.0.0",
+        "port": 5001
+    }
+
+Change "zone" to your JAKIM zone code.
+Common zones:
+    WLY01 = Kuala Lumpur / Putrajaya
+    SGR01 = Selangor (Gombak, Hulu Langat, Hulu Selangor, Sepang)
+    SGR02 = Selangor (Kuala Selangor, Sabak Bernam)
+    SGR03 = Selangor (Klang, Kuala Langat, Petaling)
+    JHR01 = Johor Bahru
+    KDH01 = Kedah
+    PNG01 = Pulau Pinang
+    PRK01 = Perak
+    MLK01 = Melaka
+    NSN01 = Negeri Sembilan
+    PHG01 = Pahang
+    TRG01 = Terengganu
+    KTN01 = Kelantan
+    SBH01 = Sabah
+    SWK01 = Sarawak
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 7 — SYNC PRAYER TIMES (FIRST TIME)
+────────────────────────────────────────────────────────────────────────────────
+Start Flask manually first:
+
+    cd ~/MusollahContentTV
+    source venv/bin/activate
+    python3 app.py &
+
+Then sync prayer times from JAKIM API:
+
+    curl http://localhost:5001/api/sync/prayer-times
+
+You should see: "success": true
+
+Then stop Flask:
+
+    kill %1
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 8 — UPDATE start_kiosk.sh FOR VENV
+────────────────────────────────────────────────────────────────────────────────
+    nano ~/MusollahContentTV/start_kiosk.sh
+
+Change this line:
+    python3 app.py &
+
+To:
+    /home/pi/MusollahContentTV/venv/bin/python3 app.py &
+
+Make it executable:
+
+    chmod +x ~/MusollahContentTV/start_kiosk.sh
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 9 — AUTOSTART ON BOOT (SYSTEMD)
+────────────────────────────────────────────────────────────────────────────────
+Create the service file:
+
+    sudo nano /etc/systemd/system/musollah-tv.service
+
+Paste the following:
+
+    [Unit]
+    Description=Musollah Content TV
+    After=network.target graphical-session.target
+    Wants=graphical-session.target
+
+    [Service]
+    Type=simple
+    User=pi
+    WorkingDirectory=/home/pi/MusollahContentTV
+    ExecStart=/bin/bash /home/pi/MusollahContentTV/start_kiosk.sh
+    Restart=on-failure
+    RestartSec=5
+    Environment=DISPLAY=:0
+
+    [Install]
+    WantedBy=graphical-session.target
+
+Enable and start it:
+
+    sudo systemctl enable musollah-tv.service
+    sudo systemctl start musollah-tv.service
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 10 — DISABLE SCREEN SLEEP
+────────────────────────────────────────────────────────────────────────────────
+    sudo nano /etc/lightdm/lightdm.conf
+
+Find the [Seat:*] section and add:
+
+    xserver-command=X -s 0 -dpms
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 11 — REBOOT & TEST
+────────────────────────────────────────────────────────────────────────────────
+    sudo reboot
+
+The Pi boots into kiosk mode automatically.
+Browser opens: http://localhost:5001
+
+
+────────────────────────────────────────────────────────────────────────────────
+CONTENT FOLDERS — POPULATE AFTER SETUP
+────────────────────────────────────────────────────────────────────────────────
+Place your files in these folders:
+
+    static/content/events/            — Event poster images (JPG/PNG)
+    static/content/background/        — background.png
+    static/content/solat/selawat.mp3  — Audio played during Screen 1 (Masuk)
+    static/solat.png                  — Full-screen image for Screen 3
+
+
+────────────────────────────────────────────────────────────────────────────────
+USEFUL COMMANDS
+────────────────────────────────────────────────────────────────────────────────
+# Check service status
+sudo systemctl status musollah-tv.service
+
+# View live logs
+sudo journalctl -u musollah-tv.service -f
+
+# Restart the service
+sudo systemctl restart musollah-tv.service
+
+# Sync prayer times from JAKIM API
+curl http://localhost:5001/api/sync/prayer-times
+
+# Sync settings from e-Musollah
+curl http://localhost:5001/api/sync/settings
+
+# Sync event images from e-Musollah
+curl http://localhost:5001/api/sync/events
+
+# Sync background image from e-Musollah
+curl http://localhost:5001/api/sync/background
+
+
+────────────────────────────────────────────────────────────────────────────────
+WAKTU SOLAT SCREEN FLOW
+────────────────────────────────────────────────────────────────────────────────
+When a prayer time is reached, the kiosk automatically redirects to:
+    /waktu_solat?solat={prayer}
+
+Screen flow:
+    Screen 1 — "Waktu Solat {Nama} Telah Masuk" + countdown (masuk_duration_minutes)
+    Screen 2 — "Iqomah" + countdown (iqomah_duration_minutes)
+    Screen 3 — Full-screen image (static/solat.png) for (solat_duration_minutes)
+    → Redirects back to /
+
+Prayers monitored: Subuh, Zohor, Asar, Maghrib, Isyak
+(Syuruk is displayed but does NOT trigger the waktu_solat flow)
+
+Durations are configured in settings.json:
+    "masuk_duration_minutes":  1   (Screen 1)
+    "iqomah_duration_minutes": 10  (Screen 2)
+    "solat_duration_minutes":  20  (Screen 3)
+
+
+────────────────────────────────────────────────────────────────────────────────
+END OF SETUP GUIDE
+================================================================================

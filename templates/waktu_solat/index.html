@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="{{ template }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waktu Solat - {{ musollah_name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ── Dark theme ── */
+        :root[data-theme="dark"] {
+            --body-bg:           #040d1a;
+            --body-color:        #ffffff;
+            --header-bg:         linear-gradient(180deg, #1e2535 0%, #131926 100%);
+            --header-border:     rgba(240,192,64,0.35);
+            --header-shadow:     0 4px 24px rgba(0,0,0,0.5);
+            --accent:            #f0c040;
+            --accent-shadow:     0 2px 20px rgba(240,192,64,0.3);
+            --date-greg:         #ffffff;
+            --date-sep:          rgba(255,255,255,0.2);
+            --date-hijri:        #f0c040;
+            --clock-color:       #ffffff;
+            --muted:             rgba(255,255,255,0.35);
+            --strong:            rgba(255,255,255,0.7);
+            --ring-border:       rgba(240,192,64,0.12);
+            --divider-bg:        linear-gradient(90deg, transparent, rgba(240,192,64,0.5), transparent);
+            --timer-color:       #ffffff;
+            --timer-shadow:      0 4px 40px rgba(255,255,255,0.08);
+            --urgent-color:      #ff4444;
+            --urgent-shadow:     0 0 60px rgba(255,68,68,0.4);
+            /* screen 1 */
+            --s1-prayer-color:   #f0c040;
+            --s1-prayer-shadow:  0 0 60px rgba(240,192,64,0.4);
+            --s1-bg-c1:          rgba(240,192,64,0.07);
+            --s1-bg-c2:          rgba(16,78,139,0.10);
+            /* screen 2 */
+            --s2-iqomah-color:   #10b981;
+            --s2-iqomah-shadow:  0 0 80px rgba(16,185,129,0.5);
+            --s2-prayer-color:   rgba(255,255,255,0.45);
+            --s2-bg-c1:          rgba(16,185,129,0.08);
+            --s2-bg-c2:          rgba(16,78,139,0.08);
+            --s2-ring-border:    rgba(16,185,129,0.12);
+            --s2-divider:        linear-gradient(90deg, transparent, rgba(16,185,129,0.5), transparent);
+            --sublabel-color:    rgba(255,255,255,0.25);
+        }
+
+        /* ── Bright theme ── */
+        :root[data-theme="bright"] {
+            --body-bg:           #f0f4f8;
+            --body-color:        #1a2a3a;
+            --header-bg:         linear-gradient(180deg, #dde3ea 0%, #ccd4dc 100%);
+            --header-border:     rgba(14,122,75,0.35);
+            --header-shadow:     0 4px 24px rgba(0,0,0,0.12);
+            --accent:            #0e7a4b;
+            --accent-shadow:     0 2px 15px rgba(14,122,75,0.15);
+            --date-greg:         rgba(26,42,58,0.7);
+            --date-sep:          rgba(26,42,58,0.2);
+            --date-hijri:        #0e7a4b;
+            --clock-color:       #1a2a3a;
+            --muted:             rgba(26,42,58,0.35);
+            --strong:            rgba(26,42,58,0.65);
+            --ring-border:       rgba(14,122,75,0.12);
+            --divider-bg:        linear-gradient(90deg, transparent, rgba(14,122,75,0.45), transparent);
+            --timer-color:       #1a2a3a;
+            --timer-shadow:      0 4px 30px rgba(26,42,58,0.06);
+            --urgent-color:      #dc2626;
+            --urgent-shadow:     0 0 40px rgba(220,38,38,0.2);
+            /* screen 1 */
+            --s1-prayer-color:   #0e7a4b;
+            --s1-prayer-shadow:  0 0 40px rgba(14,122,75,0.25);
+            --s1-bg-c1:          rgba(14,122,75,0.06);
+            --s1-bg-c2:          rgba(59,130,246,0.05);
+            /* screen 2 */
+            --s2-iqomah-color:   #059669;
+            --s2-iqomah-shadow:  0 0 60px rgba(5,150,105,0.35);
+            --s2-prayer-color:   rgba(26,42,58,0.4);
+            --s2-bg-c1:          rgba(5,150,105,0.07);
+            --s2-bg-c2:          rgba(59,130,246,0.05);
+            --s2-ring-border:    rgba(5,150,105,0.12);
+            --s2-divider:        linear-gradient(90deg, transparent, rgba(5,150,105,0.5), transparent);
+            --sublabel-color:    rgba(26,42,58,0.3);
+        }
+
+        /* ── Reset & layout ── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--body-bg);
+            color: var(--body-color);
+        }
+
+        /* ── Header (always visible) ── */
+        .header {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 20;
+            background: var(--header-bg);
+            border-bottom: 2px solid var(--header-border);
+            box-shadow: var(--header-shadow);
+        }
+
+        .musollah-name {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-shadow: var(--accent-shadow);
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .date-section {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 17px;
+        }
+
+        .date-gregorian { color: var(--date-greg); }
+        .date-separator  { color: var(--date-sep); }
+
+        .date-hijri {
+            font-weight: 600;
+            color: var(--date-hijri);
+        }
+
+        .clock {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            line-height: 1;
+            color: var(--clock-color);
+        }
+
+        /* ── Screen container ── */
+        .screens-wrap {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen.active {
+            display: flex;
+            animation: screenFadeIn 0.6s ease forwards;
+        }
+
+        @keyframes screenFadeIn {
+            from { opacity: 0; transform: scale(1.02); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* ── Shared: decorative bg ── */
+        .screen-bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            animation: bgPulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgPulse {
+            0%   { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* ── Shared: rings ── */
+        .rings {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: ringExpand 4s ease-out infinite;
+        }
+
+        .ring-1 { width: 300px; height: 300px; animation-delay: 0s; }
+        .ring-2 { width: 300px; height: 300px; animation-delay: 1.4s; }
+        .ring-3 { width: 300px; height: 300px; animation-delay: 2.8s; }
+
+        @keyframes ringExpand {
+            0%   { width: 200px; height: 200px; opacity: 0.5; }
+            100% { width: 900px; height: 900px; opacity: 0; }
+        }
+
+        /* ── Shared: content block ── */
+        .screen-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* ── Shared: divider ── */
+        .divider {
+            width: 200px;
+            height: 2px;
+            border-radius: 2px;
+            margin: 8px 0;
+        }
+
+        /* ── Shared: countdown ── */
+        .countdown {
+            font-size: 160px;
+            font-weight: 800;
+            letter-spacing: 8px;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            transition: color 0.4s ease, text-shadow 0.4s ease;
+            color: var(--timer-color);
+            text-shadow: var(--timer-shadow);
+        }
+
+        .countdown.urgent {
+            color: var(--urgent-color);
+            text-shadow: var(--urgent-shadow);
+            animation: urgentPulse 0.8s ease-in-out infinite;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.6; }
+        }
+
+        .sublabel {
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--sublabel-color);
+        }
+
+        /* ═══════════════════════════════════════
+           SCREEN 1 — Waktu Masuk
+        ═══════════════════════════════════════ */
+        #screen-1 .screen-bg {
+            background:
+                radial-gradient(ellipse at 50% 50%, var(--s1-bg-c1) 0%, transparent 65%),
+                radial-gradient(ellipse at 20% 80%, var(--s1-bg-c2) 0%, transparent 50%);
+        }
+
+        #screen-1 .ring { border: 1px solid var(--ring-border); }
+
+        .s1-label {
+            font-size: 60px;
+            font-weight: 400;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .s1-prayer {
+            font-size: 220px;
+            font-weight: 900;
+            letter-spacing: 14px;
+            text-transform: uppercase;
+            line-height: 1;
+            color: var(--s1-prayer-color);
+            text-shadow: var(--s1-prayer-shadow);
+            animation: s1PrayerGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes s1PrayerGlow {
+            0%, 100% { text-shadow: var(--s1-prayer-shadow); }
+            50%       { filter: brightness(1.3); }
+        }
+
+        .s1-masuk {
+            font-size: 76px;
+            font-weight: 600;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            color: var(--strong);
+        }
+
+        #screen-1 .divider { background: var(--divider-bg); }
+
+        /* ═══════════════════════════════════════
+           SCREEN 2 — Iqomah
+        ═══════════════════════════════════════ */
+        #screen-2 .screen-bg {
+            background:
+                radial-gradient(ellipse at 50% 50%, var(--s2-bg-c1) 0%, transparent 60%),
+                radial-gradient(ellipse at 30% 70%, var(--s2-bg-c2) 0%, transparent 50%);
+        }
+
+        #screen-2 .ring { border: 1px solid var(--s2-ring-border); }
+
+        .s2-iqomah {
+            font-size: 240px;
+            font-weight: 900;
+            letter-spacing: 16px;
+            text-transform: uppercase;
+            line-height: 1;
+            color: #ffffff;
+            text-shadow: 0 0 80px rgba(255,255,255,0.25);
+            animation: s2IqomahGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes s2IqomahGlow {
+            0%, 100% { text-shadow: 0 0 60px rgba(255,255,255,0.2); }
+            50%       { text-shadow: 0 0 120px rgba(255,255,255,0.45), 0 0 240px rgba(255,255,255,0.1); }
+        }
+
+        .s2-prayer { display: none; }
+
+        #screen-2 .divider { background: var(--s2-divider); }
+
+        /* ═══════════════════════════════════════
+           SCREEN 3 — Final Image
+        ═══════════════════════════════════════ */
+        #screen-3 {
+            background: #000000;
+        }
+
+        .s3-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (always visible) -->
+    <div class="header">
+        <h1 class="musollah-name">{{ musollah_name }}</h1>
+        <div class="header-right">
+            <div class="date-section">
+                <div class="date-gregorian" id="date-gregorian"></div>
+                <div class="date-separator">|</div>
+                <div class="date-hijri" id="date-hijri"></div>
+            </div>
+            <div class="clock" id="clock"></div>
+        </div>
+    </div>
+
+    <!-- Page config (read by JS to avoid Jinja2 inside script blocks) -->
+    <meta id="page-config"
+        data-solat="{{ solat }}"
+        data-masuk-minutes="{{ masuk_duration_minutes }}"
+        data-iqomah-minutes="{{ iqomah_duration_minutes }}"
+        data-solat-minutes="{{ solat_duration_minutes }}">
+
+    <!-- Audio for Screen 1 -->
+    <audio id="s1-audio" src="/static/content/solat/selawat.mp3" preload="auto" autoplay></audio>
+
+    <!-- Screens -->
+    <div class="screens-wrap">
+
+        <!-- ══ Screen 1: Waktu Masuk ══ -->
+        <div id="screen-1" class="screen active">
+            <div class="screen-bg"></div>
+            <div class="rings">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="ring ring-3"></div>
+            </div>
+            <div class="screen-content">
+                <div class="s1-label">Waktu Solat</div>
+                <div class="s1-prayer" id="s1-prayer">—</div>
+                <div class="s1-masuk">Telah Masuk</div>
+                <div class="divider"></div>
+                <div class="countdown" id="cd-1">01:00</div>
+                <div class="sublabel">sehingga iqomah</div>
+            </div>
+        </div>
+
+        <!-- ══ Screen 2: Iqomah ══ -->
+        <div id="screen-2" class="screen">
+            <div class="screen-bg"></div>
+            <div class="rings">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="ring ring-3"></div>
+            </div>
+            <div class="screen-content">
+                <div class="s2-iqomah">Iqomah</div>
+                <div class="s2-prayer" id="s2-prayer">—</div>
+                <div class="divider"></div>
+                <div class="countdown" id="cd-2">10:00</div>
+                <div class="sublabel">masa solat berjemaah</div>
+            </div>
+        </div>
+
+        <!-- ══ Screen 3: Final Image ══ -->
+        <div id="screen-3" class="screen">
+            <img class="s3-image" src="/static/content/solat/solat.png" alt="Solat">
+        </div>
+
+    </div>
+
+    <script>
+        // ── Config ────────────────────────────────────────────────
+        const _cfg           = document.getElementById("page-config").dataset;
+        const SOLAT_NAME     = _cfg.solat || "";
+        const S1_TOTAL       = parseInt(_cfg.masukMinutes,  10) * 60;
+        const S2_TOTAL       = parseInt(_cfg.iqomahMinutes, 10) * 60;
+        const S3_TOTAL_MS    = parseInt(_cfg.solatMinutes,  10) * 60 * 1000;
+        const S1_URGENT_AT   = 10;    // last 10 s turns red on screen 1
+        const S2_URGENT_AT   = 60;    // last 60 s turns red on screen 2
+
+        // ── Hijri helper ─────────────────────────────────────────
+        const hijriMonths = [
+            "Muharram","Safar","Rabiulawal","Rabiulakhir",
+            "Jamadilawal","Jamadilakhir","Rejab","Syaaban",
+            "Ramadan","Syawal","Zulkaedah","Zulhijjah",
+        ];
+
+        function formatHijri(str) {
+            if (!str) return "";
+            const p = str.split("-");
+            if (p.length !== 3) return str;
+            const m = parseInt(p[1], 10);
+            return `${parseInt(p[2], 10)} ${hijriMonths[m - 1] || ""} ${p[0]}H`;
+        }
+
+        // ── Clock ─────────────────────────────────────────────────
+        function updateClock() {
+            const now = new Date();
+            const clockEl = document.getElementById("clock");
+            if (clockEl) {
+                clockEl.textContent = now.toLocaleTimeString("en-US", {
+                    hour: "2-digit", minute: "2-digit", hour12: true,
+                });
+            }
+            const dateEl = document.getElementById("date-gregorian");
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString("ms-MY", {
+                    weekday: "long", year: "numeric", month: "long", day: "numeric",
+                });
+            }
+        }
+
+        // ── Prayer name from API (hijri) ──────────────────────────
+        async function loadHijri() {
+            try {
+                const res = await fetch("/api/prayer-times");
+                if (!res.ok) return;
+                const data = await res.json();
+                const hijriEl = document.getElementById("date-hijri");
+                if (hijriEl && data.times && data.times.hijri) {
+                    hijriEl.textContent = formatHijri(data.times.hijri);
+                }
+            } catch (e) { /* silent */ }
+        }
+
+        // ── Set prayer name on screens ────────────────────────────
+        const displayName = SOLAT_NAME
+            ? SOLAT_NAME.charAt(0).toUpperCase() + SOLAT_NAME.slice(1).toLowerCase()
+            : "—";
+
+        document.getElementById("s1-prayer").textContent = displayName;
+        document.getElementById("s2-prayer").textContent = displayName;
+
+        // ── Audio (Screen 1) ──────────────────────────────────────
+        function playS1Audio() {
+            const audio = document.getElementById("s1-audio");
+            if (!audio) return;
+            audio.currentTime = 0;
+            audio.play().catch(() => {
+                // Autoplay blocked — retry on first user interaction
+                document.addEventListener("click",  () => audio.play(), { once: true });
+                document.addEventListener("keydown", () => audio.play(), { once: true });
+            });
+        }
+
+        function stopS1Audio() {
+            const audio = document.getElementById("s1-audio");
+            if (!audio) return;
+            audio.pause();
+            audio.currentTime = 0;
+        }
+
+        // ── Countdown engine ──────────────────────────────────────
+        let currentScreen = 1;
+        let remaining     = S1_TOTAL;
+        let timerHandle   = null;
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            return `${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+        }
+
+        function updateCountdownDisplay() {
+            const urgentAt = currentScreen === 1 ? S1_URGENT_AT : S2_URGENT_AT;
+            const el = document.getElementById(`cd-${currentScreen}`);
+            if (!el) return;
+            el.textContent = formatTime(remaining);
+            if (remaining <= urgentAt) {
+                el.classList.add("urgent");
+            } else {
+                el.classList.remove("urgent");
+            }
+        }
+
+        function goToScreen(n) {
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            document.getElementById(`screen-${n}`).classList.add("active");
+            currentScreen = n;
+        }
+
+        function tick() {
+            remaining--;
+            updateCountdownDisplay();
+
+            if (remaining > 0) return;
+
+            clearInterval(timerHandle);
+            timerHandle = null;
+
+            if (currentScreen === 1) {
+                // Screen 1 done → stop audio, go to Screen 2
+                stopS1Audio();
+                goToScreen(2);
+                remaining = S2_TOTAL;
+                updateCountdownDisplay();
+                timerHandle = setInterval(tick, 1000);
+            } else if (currentScreen === 2) {
+                // Screen 2 done → go to Screen 3, then redirect home after 20 min
+                goToScreen(3);
+                setTimeout(() => { window.location.href = "/"; }, S3_TOTAL_MS);
+            }
+        }
+
+        // ── Init ──────────────────────────────────────────────────
+        updateClock();
+        loadHijri();
+        updateCountdownDisplay();
+        playS1Audio();
+        timerHandle = setInterval(tick, 1000);
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>

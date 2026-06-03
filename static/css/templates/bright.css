@@ -1,0 +1,318 @@
+/* ========== BRIGHT TEMPLATE ========== */
+
+body {
+    background: #f0f4f8;
+    color: #1a2a3a;
+}
+
+/* Background */
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+    animation: bgShift 20s ease-in-out infinite alternate;
+}
+
+@keyframes bgShift {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* Header */
+.header {
+    background: linear-gradient(180deg, #dde3ea 0%, #ccd4dc 100%);
+    border-bottom: 2px solid rgba(14, 122, 75, 0.35);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+}
+
+.header-glow {
+    background: radial-gradient(ellipse, rgba(16, 120, 80, 0.06) 0%, transparent 70%);
+}
+
+.musollah-name {
+    color: #0e7a4b;
+    text-shadow: 0 2px 15px rgba(14, 122, 75, 0.15);
+}
+
+.header-waktu-label {
+    color: rgba(26, 42, 58, 0.7);
+}
+
+.clock {
+    color: #1a2a3a;
+    text-shadow: 0 2px 20px rgba(26, 42, 58, 0.08);
+}
+
+.date-gregorian {
+    color: rgba(26, 42, 58, 0.6);
+}
+
+.date-separator {
+    color: rgba(26, 42, 58, 0.2);
+}
+
+.date-hijri {
+    color: #0e7a4b;
+    font-weight: 600;
+}
+
+/* Bottom Navbar */
+.bottom-navbar {
+    background: linear-gradient(0deg, #dde3ea 0%, #ccd4dc 100%);
+    border-top: 2px solid rgba(14, 122, 75, 0.35);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+}
+
+.bottom-prayer-col {
+    border-right-color: rgba(14, 122, 75, 0.08);
+}
+
+.bottom-prayer-col.active-prayer {
+    background: rgba(16, 185, 129, 0.12);
+    box-shadow: inset 0 4px 0 #059669;
+}
+
+.prayer-label {
+    color: #0e7a4b;
+}
+
+.bottom-prayer-col.active-prayer .prayer-label {
+    color: #059669;
+    text-shadow: 0 0 15px rgba(5, 150, 105, 0.3);
+}
+
+.prayer-time {
+    color: #1a2a3a;
+    text-shadow: 0 2px 8px rgba(26, 42, 58, 0.1);
+}
+
+.bottom-prayer-col.active-prayer .prayer-time {
+    color: #059669;
+    text-shadow: 0 0 30px rgba(5, 150, 105, 0.3);
+}
+
+/* Individual prayer column colors */
+#card-subuh {
+    background: rgba(59, 130, 246, 0.10);
+    box-shadow: inset 0 5px 0 rgba(59, 130, 246, 0.6);
+}
+#card-subuh .prayer-label { color: #2563eb; text-shadow: none; }
+
+#card-syuruk {
+    background: rgba(249, 115, 22, 0.10);
+    box-shadow: inset 0 5px 0 rgba(249, 115, 22, 0.6);
+}
+#card-syuruk .prayer-label { color: #ea6d0e; text-shadow: none; }
+
+#card-zohor {
+    background: rgba(202, 138, 4, 0.10);
+    box-shadow: inset 0 5px 0 rgba(202, 138, 4, 0.6);
+}
+#card-zohor .prayer-label { color: #b45309; text-shadow: none; }
+
+#card-asar {
+    background: rgba(20, 184, 166, 0.10);
+    box-shadow: inset 0 5px 0 rgba(20, 184, 166, 0.6);
+}
+#card-asar .prayer-label { color: #0f766e; text-shadow: none; }
+
+#card-maghrib {
+    background: rgba(244, 63, 94, 0.10);
+    box-shadow: inset 0 5px 0 rgba(244, 63, 94, 0.6);
+}
+#card-maghrib .prayer-label { color: #e11d48; text-shadow: none; }
+
+#card-isyak {
+    background: rgba(139, 92, 246, 0.10);
+    box-shadow: inset 0 5px 0 rgba(139, 92, 246, 0.6);
+}
+#card-isyak .prayer-label { color: #7c3aed; text-shadow: none; }
+
+/* Active prayer overrides individual column colors */
+.bottom-prayer-col.active-prayer {
+    background: rgba(16, 185, 129, 0.18) !important;
+    box-shadow: inset 0 5px 0 #059669 !important;
+}
+.bottom-prayer-col.active-prayer .prayer-label {
+    color: #059669 !important;
+    text-shadow: 0 0 15px rgba(5, 150, 105, 0.3) !important;
+}
+
+/* Ticker */
+.ticker-bar {
+    background: linear-gradient(90deg, rgba(14, 122, 75, 0.08) 0%, rgba(14, 122, 75, 0.04) 50%, rgba(14, 122, 75, 0.08) 100%);
+    border-top: 1px solid rgba(14, 122, 75, 0.15);
+}
+
+.ticker-text {
+    color: #0e7a4b;
+}
+
+/* Event page */
+#page-event {
+    background: #f0f4f8;
+}
+
+/* Alert Stage 1: Masuk */
+#alert-masuk {
+    background: linear-gradient(160deg, #e8f5e9 0%, #f0f4f8 100%);
+}
+
+.alert-masuk-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1200px;
+    height: 1200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(14, 122, 75, 0.08) 0%, rgba(16, 185, 129, 0.04) 40%, transparent 70%);
+    animation: masukBgPulse 3s ease-in-out infinite;
+}
+
+@keyframes masukBgPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+
+.ring {
+    border: 2px solid rgba(14, 122, 75, 0.12);
+}
+
+.alert-masuk-title {
+    color: rgba(26, 42, 58, 0.5);
+}
+
+.alert-masuk-prayer {
+    color: #0e7a4b;
+    text-shadow: 0 0 60px rgba(14, 122, 75, 0.2);
+    animation: masukPrayerGlow 2s ease-in-out infinite;
+}
+
+@keyframes masukPrayerGlow {
+    0%, 100% { text-shadow: 0 0 40px rgba(14, 122, 75, 0.15); }
+    50% { text-shadow: 0 0 80px rgba(14, 122, 75, 0.3), 0 0 150px rgba(14, 122, 75, 0.1); }
+}
+
+.alert-masuk-time {
+    color: rgba(26, 42, 58, 0.6);
+}
+
+.alert-masuk-line {
+    background: linear-gradient(90deg, transparent, #0e7a4b, transparent);
+}
+
+/* Alert Stage 2: Countdown */
+#alert-countdown {
+    background: linear-gradient(160deg, #f0f4f8 0%, #e3f2fd 100%);
+}
+
+.alert-countdown-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1000px;
+    height: 1000px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, rgba(14, 122, 75, 0.03) 40%, transparent 70%);
+    animation: countdownBgPulse 4s ease-in-out infinite;
+}
+
+@keyframes countdownBgPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.countdown-label {
+    color: rgba(26, 42, 58, 0.35);
+}
+
+.countdown-prayer-name {
+    color: #0e7a4b;
+    text-shadow: 0 0 30px rgba(14, 122, 75, 0.15);
+}
+
+.countdown-divider {
+    background: linear-gradient(90deg, transparent, rgba(26, 42, 58, 0.15), transparent);
+}
+
+.countdown-timer {
+    color: #1a2a3a;
+    text-shadow: 0 2px 20px rgba(26, 42, 58, 0.06);
+}
+
+.countdown-timer.urgent {
+    color: #dc2626;
+    text-shadow: 0 0 40px rgba(220, 38, 38, 0.2);
+}
+
+.countdown-sublabel {
+    color: rgba(26, 42, 58, 0.3);
+}
+
+/* Alert Stage 3: Jemaah */
+#alert-jemaah {
+    background: linear-gradient(160deg, #e8f5e9 0%, #f0f4f8 100%);
+}
+
+.alert-jemaah-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1200px;
+    height: 1200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(14, 122, 75, 0.04) 40%, transparent 70%);
+    animation: jemaahBgPulse 3s ease-in-out infinite;
+}
+
+@keyframes jemaahBgPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+}
+
+.jemaah-particle {
+    background: rgba(14, 122, 75, 0.25);
+}
+
+.jemaah-title {
+    color: #0e7a4b;
+    text-shadow: 0 0 60px rgba(14, 122, 75, 0.2);
+    animation: jemaahTitleGlow 3s ease-in-out infinite;
+}
+
+@keyframes jemaahTitleGlow {
+    0%, 100% { text-shadow: 0 0 40px rgba(14, 122, 75, 0.15); }
+    50% { text-shadow: 0 0 80px rgba(14, 122, 75, 0.3), 0 0 150px rgba(14, 122, 75, 0.1); }
+}
+
+.jemaah-prayer-name {
+    color: rgba(26, 42, 58, 0.5);
+}
+
+.jemaah-line {
+    background: linear-gradient(90deg, transparent, #0e7a4b, transparent);
+}
+
+/* SVG icon overrides for bright theme */
+.mosque-icon svg {
+    fill: #0e7a4b;
+}
+
+.alert-masuk-icon svg path {
+    fill: #0e7a4b;
+}
+
+.jemaah-icon svg {
+    fill: #0e7a4b;
+}

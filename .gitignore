@@ -1,0 +1,34 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Local data (prayer times cache — regenerated via /api/sync/prayer-times)
+data/prayer_times.json
+
+# Local content (uploaded per-device)
+static/content/events/*
+static/content/background/background.png
+static/content/solat/selawat.mp3
+!static/content/events/.gitkeep
+!static/content/background/.gitkeep
+!static/content/solat/.gitkeep
+
+# Static image served at root (per-device)
+static/solat.png
+
+# Claude Code
+.claude/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
