@@ -1,6 +1,7 @@
 ================================================================================
   MUSOLLAH CONTENT TV — SETUP GUIDE (FROM SCRATCH)
   Raspberry Pi 4/5 + Raspberry Pi OS (64-bit)
+  Repository: https://github.com/wanaideed/emosollah_tv
 ================================================================================
 
 
@@ -10,8 +11,9 @@ HARDWARE REQUIRED
 - Raspberry Pi 4 (4GB RAM minimum) or Pi 5
 - MicroSD card (16GB+, Class 10)
 - HDMI display / TV
-- Power supply (Pi 4: USB-C 5V 3A)
+- Power supply (Pi 4: USB-C 5V 3A | Pi 5: USB-C 5V 5A)
 - Internet connection (Ethernet recommended for first setup)
+- Optional: USB speaker or 3.5mm speaker (for Selawat audio)
 
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -24,14 +26,14 @@ STEP 1 — FLASH THE OS
    - Set hostname:  musollah-tv
    - Enable SSH
    - Set username/password  (e.g. pi / yourpassword)
-   - Set your WiFi credentials
+   - Set your WiFi credentials (or use Ethernet)
 5. Flash → insert card → boot Pi
 
 
 ────────────────────────────────────────────────────────────────────────────────
 STEP 2 — FIRST BOOT & UPDATE
 ────────────────────────────────────────────────────────────────────────────────
-SSH in or use keyboard/monitor:
+SSH in or use keyboard/monitor directly:
 
     sudo apt update && sudo apt upgrade -y
     sudo reboot
@@ -50,13 +52,12 @@ STEP 3 — INSTALL SYSTEM DEPENDENCIES
 
 
 ────────────────────────────────────────────────────────────────────────────────
-STEP 4 — COPY PROJECT FILES
+STEP 4 — CLONE PROJECT FROM GITHUB
 ────────────────────────────────────────────────────────────────────────────────
-Option A — from USB drive:
-    cp -r /media/pi/USBDRIVE/MusollahContentTV ~/MusollahContentTV
+    git clone https://github.com/wanaideed/emosollah_tv.git ~/MusollahContentTV
 
-Option B — from Git (if you have a repo):
-    git clone https://your-repo-url ~/MusollahContentTV
+Or copy from USB drive:
+    cp -r /media/pi/USBDRIVE/MusollahContentTV ~/MusollahContentTV
 
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -65,7 +66,12 @@ STEP 5 — INSTALL PYTHON DEPENDENCIES
     cd ~/MusollahContentTV
     python3 -m venv venv
     source venv/bin/activate
-    pip install flask flask-cors requests
+    pip install -r requirements.txt
+
+requirements.txt contains:
+    flask==3.1.0
+    flask-cors==5.0.1
+    requests==2.32.3
 
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -73,62 +79,108 @@ STEP 6 — CONFIGURE settings.json
 ────────────────────────────────────────────────────────────────────────────────
     nano ~/MusollahContentTV/settings.json
 
-Edit the key values:
+Full settings.json reference (edit values marked with *):
 
     {
-        "e_musollah_url": "http://your-emusollah-server",
-        "zone": "SGR01",
-        "musollah_name": "NAMA MUSOLLAH ANDA",
-        "template": "dark",
+        "e_musollah_url": "http://your-emusollah-server",  ← * your server URL
+        "zone": "SGR01",                                   ← * your JAKIM zone
+        "musollah_name": "NAMA MUSOLLAH ANDA",             ← * your musollah name
+        "template": "dark",                                ← dark | bright
         "enable_event_rotation": true,
         "enable_aktiviti_calendar": true,
         "enable_ticker": false,
         "enable_background_image": true,
         "page_rotation_seconds": 10,
-        "masuk_duration_minutes": 1,
-        "iqomah_duration_minutes": 10,
-        "solat_duration_minutes": 20,
+        "masuk_duration_seconds": 30,
+        "countdown_duration_seconds": 600,
+        "jemaah_duration_seconds": 600,
+        "masuk_duration_minutes": 1,                       ← Screen 1 duration
+        "iqomah_duration_minutes": 10,                     ← Screen 2 duration
+        "solat_duration_minutes": 20,                      ← Screen 3 duration
+        "screen_width": 1920,
+        "screen_height": 1080,
         "host": "0.0.0.0",
         "port": 5001
     }
 
-Change "zone" to your JAKIM zone code.
-Common zones:
+JAKIM Zone Codes:
     WLY01 = Kuala Lumpur / Putrajaya
     SGR01 = Selangor (Gombak, Hulu Langat, Hulu Selangor, Sepang)
     SGR02 = Selangor (Kuala Selangor, Sabak Bernam)
     SGR03 = Selangor (Klang, Kuala Langat, Petaling)
-    JHR01 = Johor Bahru
-    KDH01 = Kedah
-    PNG01 = Pulau Pinang
-    PRK01 = Perak
-    MLK01 = Melaka
-    NSN01 = Negeri Sembilan
-    PHG01 = Pahang
-    TRG01 = Terengganu
-    KTN01 = Kelantan
-    SBH01 = Sabah
-    SWK01 = Sarawak
+    JHR01 = Johor Bahru (Johor Bahru, Pontian)
+    JHR02 = Johor (Kluang, Mersing)
+    JHR03 = Johor (Kota Tinggi, Pulau Aur, Pulau Pemanggil)
+    JHR04 = Johor (Batu Pahat, Muar, Segamat, Gemas Johor)
+    KDH01 = Kedah (Kota Setar, Kubang Pasu, Pokok Sena)
+    KDH02 = Kedah (Kuala Muda, Yan, Pendang)
+    KDH03 = Kedah (Padang Terap, Sik)
+    KDH04 = Kedah (Baling)
+    KDH05 = Kedah (Bandar Baharu, Kulim)
+    KDH06 = Kedah (Langkawi)
+    KDH07 = Kedah (Puncak Gunung Jerai)
+    KTN01 = Kelantan (Kota Bharu, Bachok, Pasir Mas, Tumpat, Pasir Puteh, Machang, Kuala Krai, Mukim Chiku)
+    KTN03 = Kelantan (Gua Musang, Kuala Betis)
+    MLK01 = Melaka (seluruh Melaka)
+    NSN01 = Negeri Sembilan (Jempol, Tampin)
+    NSN02 = Negeri Sembilan (Jelebu, Kuala Pilah, Rembau)
+    NSN03 = Negeri Sembilan (Port Dickson, Seremban, Nilai)
+    PHG01 = Pahang (Pulau Tioman)
+    PHG02 = Pahang (Rompin, Pekan, Muadzam Shah)
+    PHG03 = Pahang (Maran, Chenor, Temerloh, Bera, Jerantut, Jengka)
+    PHG04 = Pahang (Raub)
+    PHG05 = Pahang (Bentong, Cameron Highlands, Lipis, Kuala Lipis, Gua Musang Pahang)
+    PHG06 = Pahang (Kuantan, Semambu, Sungai Lembing)
+    PNG01 = Pulau Pinang (seluruh Pulau Pinang)
+    PRK01 = Perak (Tapah, Slim River, Tanjung Malim)
+    PRK02 = Perak (Kuala Kangsar, Sg Siput, Ipoh, Batu Gajah, Kampar)
+    PRK03 = Perak (Lenggong, Pengkalan Hulu, Grik)
+    PRK04 = Perak (Temengor, Belum)
+    PRK05 = Perak (Teluk Intan, Bagan Datuk, Kg Gajah, Sri Iskandar, Beruas, Seri Manjung, Lumut, Sitiawan, Pulau Pangkor)
+    PRK06 = Perak (Selama, Taiping, Bagan Serai, Parit Buntar)
+    PRK07 = Perak (Bukit Larut)
+    SBH01 = Sabah (Sandakan, Tawau, Lahad Datu)
+    SBH02 = Sabah (Kudat, Kota Marudu, Pitas, Beluran)
+    SBH03 = Sabah (Beaufort, Kuala Penyu, Sipitang, Tenom, Long Pasia, Nabawan, Keningau)
+    SBH04 = Sabah (Kota Belud, Tuaran, Ranau)
+    SBH05 = Sabah (Kota Kinabalu, Penampang, Papar)
+    SBH06 = Sabah (Putatan)
+    SBH07 = Sabah (Semporna, Kunak)
+    SBH08 = Sabah (Kinabatangan)
+    SBH09 = Sabah (Tongod, Nabawan)
+    SWK01 = Sarawak (Limbang, Lawas, Sundar, Trusan)
+    SWK02 = Sarawak (Miri, Niah, Bekenu, Sibuti, Marudi)
+    SWK03 = Sarawak (Pusa, Saratok, Betong, Spaoh, Matu, Daro, Simunjan, Mukah, Dalat, Tatau, Balingian)
+    SWK04 = Sarawak (Sarikei, Julau, Kabong, Lingga, Sri Aman, Lubok Antu, Engkelili)
+    SWK05 = Sarawak (Kuching, Bau, Lundu, Sematan)
+    SWK06 = Sarawak (Kapit, Belaga, Song)
+    SWK07 = Sarawak (Sibu, Kanowit, Selangau)
+    TRG01 = Terengganu (Kuala Terengganu, Marang, Kuala Nerus)
+    TRG02 = Terengganu (Besut, Setiu)
+    TRG03 = Terengganu (Kemaman, Dungun)
+    TRG04 = Terengganu (Hulu Terengganu)
 
 
 ────────────────────────────────────────────────────────────────────────────────
 STEP 7 — SYNC PRAYER TIMES (FIRST TIME)
 ────────────────────────────────────────────────────────────────────────────────
-Start Flask manually first:
+Start Flask manually:
 
     cd ~/MusollahContentTV
     source venv/bin/activate
     python3 app.py &
 
-Then sync prayer times from JAKIM API:
+Sync prayer times from JAKIM API (full year):
 
     curl http://localhost:5001/api/sync/prayer-times
 
-You should see: "success": true
+You should see: "success": true, "days": 365 (or 366)
 
-Then stop Flask:
+Stop Flask:
 
     kill %1
+
+NOTE: Sync prayer times once a year (January) or whenever the zone changes.
 
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -154,7 +206,7 @@ Create the service file:
 
     sudo nano /etc/systemd/system/musollah-tv.service
 
-Paste the following:
+Paste the following (replace "pi" with your actual username if different):
 
     [Unit]
     Description=Musollah Content TV
@@ -173,8 +225,9 @@ Paste the following:
     [Install]
     WantedBy=graphical-session.target
 
-Enable and start it:
+Enable and start:
 
+    sudo systemctl daemon-reload
     sudo systemctl enable musollah-tv.service
     sudo systemctl start musollah-tv.service
 
@@ -184,29 +237,68 @@ STEP 10 — DISABLE SCREEN SLEEP
 ────────────────────────────────────────────────────────────────────────────────
     sudo nano /etc/lightdm/lightdm.conf
 
-Find the [Seat:*] section and add:
+Find the [Seat:*] section and add this line inside it:
 
     xserver-command=X -s 0 -dpms
 
+Save and exit.
+
 
 ────────────────────────────────────────────────────────────────────────────────
-STEP 11 — REBOOT & TEST
+STEP 11 — ADD CONTENT FILES
+────────────────────────────────────────────────────────────────────────────────
+Place your media files in these folders before rebooting:
+
+    static/content/events/            ← Event/aktiviti poster images (JPG/PNG)
+    static/content/background/        ← background.png  (custom background)
+    static/content/solat/selawat.mp3  ← Audio played during Screen 1 (Masuk)
+    static/content/solat/solat.png    ← Full-screen image shown on Screen 3
+
+NOTE: These folders are excluded from Git (per .gitignore).
+      Each device manages its own content files.
+
+
+────────────────────────────────────────────────────────────────────────────────
+STEP 12 — REBOOT & TEST
 ────────────────────────────────────────────────────────────────────────────────
     sudo reboot
 
 The Pi boots into kiosk mode automatically.
-Browser opens: http://localhost:5001
+Chromium opens: http://localhost:5001
+
+To test the waktu solat screen manually, open in browser:
+    http://localhost:5001/waktu_solat?solat=asar
 
 
 ────────────────────────────────────────────────────────────────────────────────
-CONTENT FOLDERS — POPULATE AFTER SETUP
+WAKTU SOLAT SCREEN FLOW
 ────────────────────────────────────────────────────────────────────────────────
-Place your files in these folders:
+When a prayer time is reached, the kiosk automatically navigates to:
+    /waktu_solat?solat={prayer_name}
 
-    static/content/events/            — Event poster images (JPG/PNG)
-    static/content/background/        — background.png
-    static/content/solat/selawat.mp3  — Audio played during Screen 1 (Masuk)
-    static/solat.png                  — Full-screen image for Screen 3
+3-Screen flow:
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │  Screen 1 — WAKTU SOLAT [ASAR] TELAH MASUK                 │
+    │             Countdown timer (masuk_duration_minutes)        │
+    │             Selawat audio plays automatically               │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Screen 2 — IQOMAH                                         │
+    │             Countdown timer (iqomah_duration_minutes)       │
+    │             Audio stops                                     │
+    ├─────────────────────────────────────────────────────────────┤
+    │  Screen 3 — Full-screen image                               │
+    │             Shown for (solat_duration_minutes)              │
+    │             Then redirects back to /                        │
+    └─────────────────────────────────────────────────────────────┘
+
+Prayers that trigger this flow: Subuh, Zohor, Asar, Maghrib, Isyak
+Syuruk is DISPLAYED in the prayer table but does NOT trigger the flow.
+
+Duration settings in settings.json:
+    "masuk_duration_minutes":  1    ← Screen 1 countdown length
+    "iqomah_duration_minutes": 10   ← Screen 2 countdown length
+    "solat_duration_minutes":  20   ← Screen 3 display duration
 
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -221,38 +313,63 @@ sudo journalctl -u musollah-tv.service -f
 # Restart the service
 sudo systemctl restart musollah-tv.service
 
-# Sync prayer times from JAKIM API
+# Stop the service
+sudo systemctl stop musollah-tv.service
+
+# Sync prayer times from JAKIM API (run once a year)
 curl http://localhost:5001/api/sync/prayer-times
 
-# Sync settings from e-Musollah
+# Sync settings from e-Musollah server
 curl http://localhost:5001/api/sync/settings
 
-# Sync event images from e-Musollah
+# Sync event/aktiviti images from e-Musollah server
 curl http://localhost:5001/api/sync/events
 
-# Sync background image from e-Musollah
+# Sync background image from e-Musollah server
 curl http://localhost:5001/api/sync/background
 
+# Test waktu solat screen manually (replace asar with prayer name)
+# Valid names: subuh, zohor, asar, maghrib, isyak
+curl http://localhost:5001/api/test-alert/asar
+
 
 ────────────────────────────────────────────────────────────────────────────────
-WAKTU SOLAT SCREEN FLOW
+TROUBLESHOOTING
 ────────────────────────────────────────────────────────────────────────────────
-When a prayer time is reached, the kiosk automatically redirects to:
-    /waktu_solat?solat={prayer}
+Problem: Browser does not open on boot
+  → Check service logs: sudo journalctl -u musollah-tv.service -f
+  → Make sure start_kiosk.sh uses full venv path for python3
+  → Make sure start_kiosk.sh is executable: chmod +x start_kiosk.sh
 
-Screen flow:
-    Screen 1 — "Waktu Solat {Nama} Telah Masuk" + countdown (masuk_duration_minutes)
-    Screen 2 — "Iqomah" + countdown (iqomah_duration_minutes)
-    Screen 3 — Full-screen image (static/solat.png) for (solat_duration_minutes)
-    → Redirects back to /
+Problem: Prayer times not showing (--:--)
+  → Run: curl http://localhost:5001/api/sync/prayer-times
+  → Check zone code in settings.json is correct
+  → Make sure the Pi has internet access
 
-Prayers monitored: Subuh, Zohor, Asar, Maghrib, Isyak
-(Syuruk is displayed but does NOT trigger the waktu_solat flow)
+Problem: Waktu solat screen does not auto-trigger
+  → Prayer check runs every 10 seconds — wait up to 10s after prayer time
+  → Confirm prayer data loaded: curl http://localhost:5001/api/prayer-times
+  → Test manually: open http://localhost:5001/waktu_solat?solat=asar
 
-Durations are configured in settings.json:
-    "masuk_duration_minutes":  1   (Screen 1)
-    "iqomah_duration_minutes": 10  (Screen 2)
-    "solat_duration_minutes":  20  (Screen 3)
+Problem: Selawat audio does not play
+  → Make sure selawat.mp3 exists in static/content/solat/
+  → Check speaker is connected and volume is up
+  → The Chromium flag --autoplay-policy=no-user-gesture-required is in start_kiosk.sh
+
+Problem: Screen does not wake from sleep
+  → Check /etc/lightdm/lightdm.conf has: xserver-command=X -s 0 -dpms
+  → Also run: xset s off && xset -dpms && xset s noblank
+
+
+────────────────────────────────────────────────────────────────────────────────
+ANNUAL MAINTENANCE
+────────────────────────────────────────────────────────────────────────────────
+At the start of each new year, re-sync prayer times for the new year:
+
+    curl http://localhost:5001/api/sync/prayer-times
+
+This fetches all 12 months of prayer times from the JAKIM API
+and overwrites the local data/prayer_times.json file.
 
 
 ────────────────────────────────────────────────────────────────────────────────
