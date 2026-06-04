@@ -167,6 +167,7 @@ const PrayerAlert = {
 
         const now  = new Date();
         const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+        const isFriday = now.getDay() === 5; // 0=Sunday … 5=Friday
         const prayerOrder = ["subuh", "zohor", "asar", "maghrib", "isyak"];
 
         for (const prayer of prayerOrder) {
@@ -175,7 +176,13 @@ const PrayerAlert = {
 
             // Mark immediately to block repeat fires within the same minute
             this.triggeredPrayers.add(prayer);
-            window.location.href = `/waktu_solat?solat=${encodeURIComponent(prayer)}`;
+
+            // Friday Zohor → Solat Jumaat page; all others → standard waktu solat
+            if (isFriday && prayer === "zohor") {
+                window.location.href = "/solat_jumaat";
+            } else {
+                window.location.href = `/waktu_solat?solat=${encodeURIComponent(prayer)}`;
+            }
             return;
         }
     },

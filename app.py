@@ -49,6 +49,17 @@ def waktu_solat():
     )
 
 
+@app.route("/solat_jumaat")
+def solat_jumaat():
+    return render_template("waktu_solat/solat_jumaat.html",
+        musollah_name=config.MUSOLLAH_NAME,
+        template=config.TEMPLATE,
+        masuk_duration_minutes=config.MASUK_DURATION_MINUTES,
+        iqomah_duration_minutes=config.IQOMAH_DURATION_MINUTES,
+        solat_duration_minutes=config.SOLAT_DURATION_MINUTES,
+    )
+
+
 @app.route("/api/prayer-times")
 def api_prayer_times():
     """Return today's prayer times."""
